@@ -110,6 +110,12 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Research',
+					items: [
+						{ label: 'Memory Benchmarks', slug: 'research/memory-benchmarks' },
+					],
+				},
+				{
 					label: 'Help',
 					items: [{ label: 'Contact & Support', slug: 'contact' }],
 				},
