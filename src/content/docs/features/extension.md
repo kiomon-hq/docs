@@ -3,28 +3,25 @@ title: Browser Extension
 description: Install, configure, and use the Kiomon browser extension to save pages, highlights, and notes while you browse.
 ---
 
-import { Tabs, TabItem, Steps } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
 
 The Kiomon extension is the fastest way to get content into your library. It runs in your browser, extracts clean readable content from any page, and saves it to your chosen workspace with one click.
 
 ## Install
 
-<Tabs>
-	<TabItem label="Chrome / Edge / Brave">
+The extension runs in Chromium browsers — **Chrome, Edge, Brave and Arc** — and is installed from
+the Chrome Web Store. It is not available for Firefox or Safari.
 
-	1. Visit the [Chrome Web Store listing](#) and click **Add to Browser**.
-	2. In the extensions menu, click the **pin** icon next to Kiomon so it stays accessible in your toolbar.
-	3. Open the popup to confirm it shows your dashboard session.
+<Steps>
+	1. Install Kiomon from the Chrome Web Store and confirm the browser's permission prompt.
+	2. In the extensions menu, click the **pin** icon next to Kiomon so it stays in your toolbar.
+	3. Open the popup and confirm it shows your dashboard session rather than a sign-in screen.
+</Steps>
 
-	</TabItem>
-	<TabItem label="Firefox">
-
-	1. Visit the [Firefox Add-ons listing](#) and click **Add to Firefox**.
-	2. Pin the extension to your toolbar.
-	3. Open the popup to confirm it recognizes your session.
-
-	</TabItem>
-</Tabs>
+:::note
+If the listing is not available to you — a managed browser, a region restriction — write to
+[support@kiomon.com](mailto:support@kiomon.com) and the team will tell you what your options are.
+:::
 
 ## Sign in
 

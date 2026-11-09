@@ -87,7 +87,9 @@ Project name and credentials live in the repository's Actions variables and secr
 the repository. A pull request runs the same build plus `scripts/check-sidebar.mjs`, so a typo
 in a sidebar slug is a red build rather than a 404 in production.
 
-## Licence
+## Licence and security
 
-© Kiomon. All rights reserved. The documentation text and brand assets are not licensed for
-redistribution; the site's build configuration is published for transparency.
+© Kiomon. All rights reserved — the documentation text and brand assets are not licensed for
+redistribution. See [`LICENSE`](LICENSE) for what this repository does and does not grant.
+
+Vulnerabilities are reported privately, not in a public issue: see [`SECURITY.md`](SECURITY.md).

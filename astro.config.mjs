@@ -97,7 +97,7 @@ export default defineConfig({
 					label: 'Account & Billing',
 					items: [
 						{ label: 'API Keys', slug: 'account/api-keys' },
-						{ label: 'Plans & Quotas', slug: 'account/billing' },
+						{ label: 'Plans & Billing', slug: 'account/billing' },
 					],
 				},
 				{
@@ -108,6 +108,10 @@ export default defineConfig({
 						{ label: 'Webhooks', slug: 'reference/webhooks' },
 						{ label: 'Glossary', slug: 'reference/glossary' },
 					],
+				},
+				{
+					label: 'Help',
+					items: [{ label: 'Contact & Support', slug: 'contact' }],
 				},
 			],
 		}),
