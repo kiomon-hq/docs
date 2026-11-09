@@ -53,7 +53,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Fail in five seconds with the name that is missing, rather than after a
       # full build with wrangler's "non-interactive environment" error, which
@@ -70,7 +70,7 @@ jobs:
           exit "$missing"
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: npm
