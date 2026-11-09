@@ -28,9 +28,10 @@ results.
 | **All** | **470** | **87.2 %** | **97.0 %** | **98.3 %** | **99.1 %** |
 | *random window of 20* | | | | | *42.2 %* |
 
-All 470 scored questions were run. The set's other 30 instances are abstention questions: they have
-no evidence session to retrieve, so they carry no retrieval metric and are not scored here. 95 %
-confidence intervals: top 20 [97.8, 99.7], top 1 [83.9, 90.0].
+All 470 scored questions were run. The set's other 30 are abstention questions — "what is my
+hamster's name?" when the history only ever mentions a cat — so there is no answer to locate; only a
+metric that judges the generated answer can score those. 95 % confidence intervals: top 20
+[97.8, 99.7], top 1 [83.9, 90.0].
 
 **The 42.2 % row is part of the result.** A history here holds about 48 sessions, so a window of 20
 already covers 42 % of the candidates by chance. Recall@20 is a weak metric on this benchmark; we
