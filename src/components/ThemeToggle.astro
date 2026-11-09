@@ -1,0 +1,100 @@
+---
+/**
+ * Kiomon — Docs · ThemeToggle
+ * Copyright (c) 2026 Kiomon. All rights reserved.
+ *
+ * Segmented Light / Dark control for the header, replacing Starlight's
+ * auto-cycling select. Speaks Starlight's storage contract (localStorage
+ * "starlight-theme" + documentElement data-theme) so preference persists
+ * and the rest of the theme system stays in sync.
+ */
+---
+
+<div class="theme-toggle" role="group" aria-label="Color theme">
+	<button type="button" class="theme-btn" data-theme="light" aria-pressed="false" aria-label="Use light theme">
+		<svg class="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<circle cx="12" cy="12" r="4"/>
+			<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+		</svg>
+	</button>
+	<button type="button" class="theme-btn" data-theme="dark" aria-pressed="false" aria-label="Use dark theme">
+		<svg class="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+		</svg>
+	</button>
+</div>
+
+<script is:inline>
+	(() => {
+		const root = document.documentElement;
+
+		/** Resolve the active theme: stored manual choice, else system. */
+		const resolve = () => {
+			const stored = localStorage.getItem('starlight-theme');
+			if (stored === 'light' || stored === 'dark') return stored;
+			return root.dataset.theme === 'light' ? 'light' : 'dark';
+		};
+
+		const apply = (theme) => {
+			document.querySelectorAll('.theme-toggle [data-theme]').forEach((btn) => {
+				btn.setAttribute('aria-pressed', String(btn.dataset.theme === theme));
+			});
+		};
+
+		document.querySelectorAll('.theme-toggle [data-theme]').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				const theme = btn.dataset.theme;
+				root.dataset.theme = theme;
+				localStorage.setItem('starlight-theme', theme);
+				apply(theme);
+				if (window.StarlightThemeProvider) window.StarlightThemeProvider.updatePickers(theme);
+			});
+		});
+
+		apply(resolve());
+	})();
+</script>
+
+<style>
+	@layer starlight.core {
+		.theme-toggle {
+			display: inline-flex;
+			align-items: center;
+			gap: 2px;
+			height: 32px;
+			padding: 2px;
+			border-radius: 999px;
+			border: 1px solid var(--sl-color-hairline);
+			background: var(--sl-color-bg-toggle, transparent);
+		}
+		.theme-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 28px;
+			height: 26px;
+			padding: 0;
+			border: none;
+			border-radius: 999px;
+			background: transparent;
+			color: var(--sl-color-muted);
+			cursor: pointer;
+			transition:
+				background-color 180ms var(--sl-transition-ease, ease-out),
+				color 180ms var(--sl-transition-ease, ease-out),
+				box-shadow 180ms var(--sl-transition-ease, ease-out);
+		}
+		.theme-btn:hover {
+			color: var(--sl-color-white);
+			background: var(--sl-color-bg-hover, transparent);
+		}
+		.theme-btn[aria-pressed='true'] {
+			color: var(--sl-color-accent);
+			background: var(--sl-color-bg-toggle-active, var(--sl-color-bg-accent));
+			box-shadow: var(--sl-toggle-shadow, none);
+		}
+		.theme-btn[aria-pressed='true']:hover {
+			color: var(--sl-color-accent);
+		}
+	}
+</style>

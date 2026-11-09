@@ -1,0 +1,72 @@
+---
+/**
+ * Kiomon — Docs · SiteTitle
+ * Copyright (c) 2026 Kiomon. All rights reserved.
+ *
+ * Brand lockup for the Starlight header: the official /logo.svg mark from
+ * the marketing site's brand set (the same asset BrandLogo uses) plus a
+ * Bricolage wordmark and a mono "Docs" chip.
+ */
+const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute;
+const word = String(siteTitle).split(' ')[0] || 'Kiomon';
+---
+
+<a href={siteTitleHref} class="site-title sl-flex" aria-label={`${word} documentation`}>
+	<img class="brand-mark" src="/logo.svg" alt="" width="28" height="28" loading="eager" decoding="async" />
+	<span class="brand-word" translate="no">{word}</span>
+	<span class="brand-chip" translate="no">Docs</span>
+</a>
+
+<style>
+	@layer starlight.core {
+		.site-title {
+			align-items: center;
+			gap: 10px;
+			min-width: 0;
+			white-space: nowrap;
+			text-decoration: none;
+			transition: opacity 180ms var(--sl-transition-ease, ease-out);
+		}
+		.site-title:hover {
+			opacity: 0.84;
+		}
+		.brand-mark {
+			width: 28px;
+			height: 28px;
+			flex-shrink: 0;
+			object-fit: contain;
+			object-position: center;
+			display: block;
+		}
+		.brand-word {
+			font-family: var(--sl-font-headings);
+			font-size: 20px;
+			font-weight: 650;
+			letter-spacing: -0.02em;
+			line-height: 1;
+			color: var(--sl-color-white);
+		}
+		.brand-chip {
+			display: inline-flex;
+			align-items: center;
+			height: 20px;
+			padding: 0 7px;
+			border-radius: 999px;
+			border: 1px solid var(--sl-color-accent-border, var(--sl-color-hairline));
+			background: var(--sl-color-accent-tint, transparent);
+			font-family: var(--sl-font-mono);
+			font-size: 10px;
+			font-weight: 600;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: var(--sl-color-accent-soft, var(--sl-color-accent));
+			transition:
+				border-color 180ms var(--sl-transition-ease, ease-out),
+				background-color 180ms var(--sl-transition-ease, ease-out);
+		}
+		.site-title:hover .brand-chip {
+			border-color: var(--sl-color-accent);
+			background: var(--sl-color-accent-tint-strong);
+		}
+	}
+</style>

@@ -1,0 +1,836 @@
+/**
+ * Kiomon — Docs · Design System
+ * Copyright (c) 2026 Kiomon. All rights reserved.
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * DIRECTION CONTRACT — Kiomon Docs (surface inside the established brand world)
+ * ─────────────────────────────────────────────────────────────────────────────
+ * THESIS: A premium Read-mode surface that inherits the Kiomon brand world —
+ * cream canvas, ink structural plates, signal-orange accent — and refuses the
+ * default doc-template look (blue chip accents, chrome gray) in both themes.
+ * OWN-WORLD: warm cream/ink canvases; floating glass header (blur(16px)
+ * saturate(180%) + hairline); Bricolage Grotesque display over Inter body
+ * with JetBrains Mono data; 12px radii, soft warm shadows, mono eyebrows in
+ * navigation only. Dark and light are equal citizens behind a segmented
+ * Light/Dark toggle in the header — the use scene is a reader at a desk
+ * (light) or at night (dark), never one default.
+ * STORY: the reader lands, finds the answer in the library fast, and trusts
+ * the brand from the chrome: Kiomon's own mark, its own orange, its own
+ * typographic voice — docs that read like the product.
+ * FIRST VIEWPORT: glass nav (mark + Kiomon wordmark + Docs chip + search +
+ * Light/Dark toggle), then the page title in Bricolage and content at a
+ * measured 48rem measure on the cream/ink canvas.
+ * FORM: established-world inheritance — the Kiomon token system re-hosted
+ * onto Starlight's component chrome. No concept roll.
+ * FINISH: unreviewed and undocumented is unfinished; this build ends with the
+ * finish review, the verdict, DESIGN.md, and every shipping raster carrying
+ * its provenance.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 1. BRAND TOKENS — mapped onto Starlight's color roles
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+:root, :root[data-theme='dark'] {
+	/* ── Deep obsidian dark theme (dark theme is the default render) ── */
+	--sl-color-white: #EDEDED; /* headings / strong text */
+	--sl-color-gray-1: #F4F4F5; /* code text, near-white */
+	--sl-color-gray-2: #D4D4D8; /* body text on obsidian */
+	--sl-color-gray-3: #A1A1AA; /* muted secondary */
+	--sl-color-gray-4: #71717A; /* dimmed metadata */
+	--sl-color-gray-5: #1E1E1E; /* inline-code bg, toggle track */
+	--sl-color-gray-6: #1E1E1E; /* raised hairline */
+	--sl-color-black: #0D0D0D; /* inverted surface (cards, pre blocks, input bg) */
+
+	/* ── Signal orange (brand accent, brightened for ink contrast ≥4.5:1) ── */
+	--sl-color-accent-low: #2E1405; /* tinted surfaces */
+	--sl-color-accent: #F37338; /* interactive accent */
+	--sl-color-accent-high: #FFB38E; /* accent text on tinted bg */
+	--sl-color-text-accent: #FF8F5E; /* link text */
+	--sl-color-text-invert: #050505; /* text on accent fills */
+	--sl-color-bg-accent: #2E1405;
+
+	/* ── Surfaces ── */
+	--sl-color-bg: #050505; /* deep obsidian canvas */
+	--sl-color-bg-nav: rgba(5, 5, 5, 0.85); /* floating glass header */
+	--sl-color-bg-sidebar: #050505; /* deep obsidian sidebar */
+	--sl-color-bg-inline-code: rgba(255, 255, 255, 0.06);
+	--sl-color-backdrop-overlay: rgba(0, 0, 0, 0.75);
+
+	/* ── Hairs ── */
+	--sl-color-hairline-light: rgba(255, 255, 255, 0.12);
+	--sl-color-hairline: rgba(255, 255, 255, 0.07);
+	--sl-color-hairline-shade: rgba(255, 255, 255, 0.18);
+
+	/* ── Semantic callout colors (brand-warm) ── */
+	--sl-color-blue-low: #0D1726; --sl-color-blue: #7BA3E8; --sl-color-blue-high: #B7CCF4;
+	--sl-color-green-low: #0C1D15; --sl-color-green: #4FC394; --sl-color-green-high: #9FDCC4;
+	--sl-color-orange-low: #241105; --sl-color-orange: #F37338; --sl-color-orange-high: #FFB38E;
+	--sl-color-purple-low: #181226; --sl-color-purple: #A78BFA; --sl-color-purple-high: #CBBCFB;
+	--sl-color-red-low: #24100E; --sl-color-red: #F2807C; --sl-color-red-high: #FFB5B1;
+
+	/* ── Shadows (deep high-contrast depth system) ── */
+	--sl-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4);
+	--sl-shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.7), 0 2px 6px -1px rgba(0, 0, 0, 0.5);
+	--sl-shadow-lg: 0 14px 36px -6px rgba(0, 0, 0, 0.85), 0 4px 14px -3px rgba(0, 0, 0, 0.7);
+
+	/* ── Custom chrome tokens ── */
+	--sl-transition-ease: cubic-bezier(0.16, 1, 0.3, 1);
+	--sl-header-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 28px -18px rgba(0, 0, 0, 0.9);
+	--sl-color-bg-toggle: rgba(255, 255, 255, 0.05);
+	--sl-color-bg-toggle-active: #1E1E1E;
+	--sl-color-bg-hover: rgba(255, 255, 255, 0.07);
+	--sl-toggle-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+	--sl-color-accent-border: rgba(243, 115, 56, 0.38);
+	--sl-color-accent-tint: rgba(243, 115, 56, 0.1);
+	--sl-color-accent-tint-strong: rgba(243, 115, 56, 0.18);
+	--sl-color-accent-soft: #FF8F5E;
+	--sl-color-surface: #0D0D0D; /* raised cards */
+}
+
+:root[data-theme='light'] {
+	/* ── Cream canvas light theme ── */
+	--sl-color-white: #141413; /* ink headings */
+	--sl-color-gray-1: #33312C; /* near-ink */
+	--sl-color-gray-2: #4C4941; /* body text */
+	--sl-color-gray-3: #746F63; /* muted */
+	--sl-color-gray-4: #A49F92; /* dimmed metadata */
+	--sl-color-gray-5: #CDC7BC; /* inline-code bg */
+	--sl-color-gray-6: #E3DDD9; /* hairline border */
+	--sl-color-black: #FFFFFF; /* inverted (white surface) */
+
+	/* ── Signal orange (brand tokens verbatim) ── */
+	--sl-color-accent-low: #FFF7F2;
+	--sl-color-accent: #C33F00;
+	--sl-color-accent-high: #9A3A0A;
+	--sl-color-text-accent: #B53C00;
+	--sl-color-text-invert: #FFFFFF;
+	--sl-color-bg-accent: #FFF7F2;
+
+	/* ── Surfaces ── */
+	--sl-color-bg: #F8F7F5; /* cream canvas (--bg-app) */
+	--sl-color-bg-nav: rgba(248, 247, 245, 0.84);
+	--sl-color-bg-sidebar: #F8F7F5;
+	--sl-color-bg-inline-code: rgba(20, 20, 19, 0.055);
+	--sl-color-backdrop-overlay: rgba(20, 20, 19, 0.4);
+
+	/* ── Hairs ── */
+	--sl-color-hairline-light: rgba(20, 20, 19, 0.14);
+	--sl-color-hairline: rgba(20, 20, 19, 0.07);
+	--sl-color-hairline-shade: rgba(20, 20, 19, 0.18);
+
+	/* ── Semantic callout colors (brand-warm) ── */
+	--sl-color-blue-low: #EEF2F8; --sl-color-blue: #3A5A9E; --sl-color-blue-high: #274477;
+	--sl-color-green-low: #EFF6F1; --sl-color-green: #2D8A6B; --sl-color-green-high: #1C5E48;
+	--sl-color-orange-low: #FFF7F2; --sl-color-orange: #CF4500; --sl-color-orange-high: #9A3A0A;
+	--sl-color-purple-low: #F3EFFA; --sl-color-purple: #6F4FC2; --sl-color-purple-high: #4A2F8C;
+	--sl-color-red-low: #FBEEEC; --sl-color-red: #B33A2B; --sl-color-red-high: #8A2A1E;
+
+	/* ── Shadows (the brand's soft warm depth system) ── */
+	--sl-shadow-sm: 0 1px 2px rgba(20, 20, 19, 0.04), 0 1px 3px rgba(20, 20, 19, 0.02);
+	--sl-shadow-md: 0 4px 14px -2px rgba(20, 20, 19, 0.06), 0 2px 6px -1px rgba(20, 20, 19, 0.03);
+	--sl-shadow-lg: 0 14px 36px -6px rgba(20, 20, 19, 0.12), 0 4px 14px -3px rgba(20, 20, 19, 0.07);
+
+	/* ── Custom chrome tokens ── */
+	--sl-transition-ease: cubic-bezier(0.16, 1, 0.3, 1);
+	--sl-header-shadow: 0 1px 0 rgba(20, 20, 19, 0.02), 0 10px 28px -18px rgba(20, 20, 19, 0.14);
+	--sl-color-bg-toggle: rgba(20, 20, 19, 0.03);
+	--sl-color-bg-toggle-active: #FFFFFF;
+	--sl-color-bg-hover: rgba(20, 20, 19, 0.045);
+	--sl-toggle-shadow: 0 1px 2px rgba(20, 20, 19, 0.08);
+	--sl-color-accent-border: rgba(207, 69, 0, 0.25);
+	--sl-color-accent-tint: rgba(207, 69, 0, 0.06);
+	--sl-color-accent-tint-strong: rgba(207, 69, 0, 0.12);
+	--sl-color-accent-soft: #B53C00;
+	--sl-color-surface: #FFFFFF; /* raised cards */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 2. TYPE — Bricolage display / Inter body / JetBrains Mono data
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+	--sl-font: 'Inter', var(--sl-font-system);
+	--sl-font-mono: 'JetBrains Mono', var(--sl-font-system-mono);
+	--sl-font-headings: 'Bricolage Grotesque', 'Inter', var(--sl-font-system);
+
+	--sl-text-body: 1.0625rem; /* 17px */
+	--sl-text-body-sm: 0.9375rem;
+	--sl-text-h1: 2.25rem;
+	--sl-text-h2: 1.625rem;
+	--sl-text-h3: 1.25rem;
+	--sl-text-h4: 1.0625rem;
+	--sl-line-height: 1.7;
+	--sl-line-height-headings: 1.18;
+
+	--sl-nav-height: 4rem;
+	--sl-nav-pad-y: 0.75rem;
+	--sl-content-width: 48rem;
+	--sl-content-gap-y: 1.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 3. BROWSER SURFACES — selection, scrollbar, caret, focus
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+::selection {
+	background: var(--sl-color-accent);
+	color: var(--sl-color-text-invert);
+}
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--sl-color-gray-5) transparent;
+}
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: var(--sl-color-gray-5);
+	border-radius: 8px;
+	border: 2.5px solid transparent;
+	background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--sl-color-gray-4);
+	background-clip: padding-box;
+}
+
+:focus-visible {
+	outline: 2px solid var(--sl-color-accent);
+	outline-offset: 2px;
+	border-radius: 4px;
+}
+input,
+textarea,
+select {
+	caret-color: var(--sl-color-accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 4. HEADER — floating glass shell (the marketing site's nav grammar)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+
+	.header {
+		position: sticky;
+		top: 0;
+		z-index: var(--sl-z-index-navbar);
+		height: var(--sl-nav-height);
+		backdrop-filter: blur(16px) saturate(180%);
+		-webkit-backdrop-filter: blur(16px) saturate(180%);
+		background: var(--sl-color-bg-nav);
+		border-bottom: 1px solid var(--sl-color-hairline);
+		box-shadow: var(--sl-header-shadow);
+	
+	.header .sl-container {
+		height: 100%;
+	}
+	.title-wrapper {
+		gap: 12px;
+		flex: 1;
+		min-width: 0;
+	}
+	.header .right-group {
+		gap: 10px;
+	}
+
+	/* ── Search trigger ── */
+	site-search button[data-open-modal] {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		height: 32px;
+		padding: 0 10px 0 8px;
+		border-radius: 8px;
+		border: 1px solid var(--sl-color-hairline);
+		background: var(--sl-color-bg-toggle);
+		color: var(--sl-color-muted, var(--sl-color-gray-3));
+		font-family: var(--sl-font-body);
+		font-size: 12.5px;
+		font-weight: 500;
+		cursor: pointer;
+		transition:
+			border-color 180ms var(--sl-transition-ease),
+			background-color 180ms var(--sl-transition-ease),
+			color 180ms var(--sl-transition-ease);
+	}
+	site-search button[data-open-modal]:hover {
+		border-color: var(--sl-color-accent-border);
+		background: var(--sl-color-bg-hover);
+		color: var(--sl-color-white);
+	}
+	site-search kbd {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		height: 18px;
+		padding: 0 5px;
+		border-radius: 5px;
+		border: 1px solid var(--sl-color-hairline);
+		border-bottom-width: 2px;
+		background: var(--sl-color-bg-toggle-active);
+		font-family: var(--sl-font-mono);
+		font-size: 10px;
+		color: var(--sl-color-gray-3);
+	}
+
+	/* ── Search dialog chrome ── */
+	site-search dialog {
+		border-radius: 16px;
+		border: 1px solid var(--sl-color-hairline);
+		background: var(--sl-color-bg);
+		box-shadow: var(--sl-shadow-lg);
+	}
+	site-search dialog::backdrop {
+		background: var(--sl-color-backdrop-overlay);
+		backdrop-filter: blur(4px);
+	}
+	.dialog-frame {
+		gap: 0;
+	}
+	.search-container {
+		padding: 8px;
+	}
+	.search-container .pagefind-ui__search-input {
+		border-radius: 10px;
+	}
+}
+
+/* Starlight hides the header's right group below md — keep the Light/Dark
+ * toggle (and the mobile search icon) reachable on phones. */
+@media (max-width: 50.999rem) {
+	
+		.header .right-group {
+			display: flex;
+		
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 5. SIDEBAR — quiet mono group labels, hairline item hover, orange current
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+
+	.sidebar {
+		background: var(--sl-color-bg-sidebar);
+		border-inline-end: 1px solid var(--sl-color-hairline);
+	
+	.sidebar-pane {
+		padding-block: 1.25rem;
+	}
+	.sidebar-content {
+		gap: 1px;
+	}
+	.sidebar-content ul {
+		gap: 1px;
+	}
+	.sidebar-content .top-level {
+		gap: 0;
+	}
+	.sidebar-content li > a,
+	.sidebar-content li > a[aria-current='page'] {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		min-height: 32px;
+		padding: 5px 10px;
+		border-radius: 7px;
+		font-size: 13.5px;
+		font-weight: 500;
+		line-height: 1.4;
+		color: var(--sl-color-gray-2);
+		text-decoration: none;
+		transition:
+			color 160ms var(--sl-transition-ease),
+			background-color 160ms var(--sl-transition-ease);
+	}
+	.sidebar-content li > a:hover {
+		color: var(--sl-color-white);
+		background: var(--sl-color-bg-hover);
+	}
+	.sidebar-content li > a[aria-current='page'] {
+		position: relative;
+		color: var(--sl-color-accent-soft);
+		background: var(--sl-color-accent-tint);
+		font-weight: 600;
+	}
+	.sidebar-content li > a[aria-current='page']::before {
+		content: '';
+		position: absolute;
+		inset-inline-start: -10px;
+		top: 50%;
+		translate: 0 -50%;
+		width: 3px;
+		height: 16px;
+		border-radius: 0 3px 3px 0;
+		background: var(--sl-color-accent);
+	}
+	.sidebar-content li ul li a {
+		padding-inline-start: 20px;
+	}
+	.sidebar-content button[data-small-screen-persister],
+	.sidebar-content summary {
+		font-family: var(--sl-font-mono);
+		font-size: 10.5px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--sl-color-gray-3);
+	}
+	.sidebar-content button[data-small-screen-persister] svg,
+	.sidebar-content summary svg {
+		opacity: 0.7;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 6. CONTENT — measured measure, Bricolage headings, brand links and code
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+
+	.sl-markdown-content {
+		max-width: var(--sl-content-width);
+	}
+	
+
+	/* Headings: balance + breathing room above, tighter below */
+	.sl-markdown-content :is(h1, h2, h3, h4) {
+		font-family: var(--sl-font-headings);
+		font-weight: 620;
+		letter-spacing: -0.02em;
+		color: var(--sl-color-white);
+		text-wrap: balance;
+	}
+	.sl-markdown-content h1 {
+		margin-block: 0.25rem 1.5rem;
+		font-size: var(--sl-text-h1);
+		letter-spacing: -0.03em;
+	}
+	.sl-markdown-content h2 {
+		margin-block: 2.75rem 1.125rem;
+	}
+	.sl-markdown-content h3 {
+		margin-block: 2.25rem 0.875rem;
+	}
+	.sl-markdown-content h4 {
+		margin-block: 1.75rem 0.625rem;
+		font-weight: 650;
+	}
+	.sl-markdown-content p,
+	.sl-markdown-content li {
+		color: var(--sl-color-gray-2);
+	}
+	.sl-markdown-content strong {
+		color: var(--sl-color-white);
+		font-weight: 600;
+	}
+
+	/* Links: brand orange, offset underline */
+	.sl-markdown-content a {
+		color: var(--sl-color-text-accent);
+		text-decoration: underline;
+		text-decoration-color: var(--sl-color-accent-tint-strong);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+		transition:
+			color 160ms var(--sl-transition-ease),
+			text-decoration-color 160ms var(--sl-transition-ease);
+	}
+	.sl-markdown-content a:hover {
+		color: var(--sl-color-accent);
+		text-decoration-color: currentColor;
+	}
+
+	/* Inline code */
+	.sl-markdown-content :not(pre) > code {
+		padding: 0.16em 0.38em;
+		border-radius: 6px;
+		background: var(--sl-color-bg-inline-code);
+		border: 1px solid var(--sl-color-hairline);
+		font-family: var(--sl-font-mono);
+		font-size: 0.85em;
+		color: var(--sl-color-white);
+		white-space: nowrap;
+	}
+
+	/* Code blocks: ink plate with hairline border (the marketing site's doc-code grammar) */
+	.sl-markdown-content pre {
+		border-radius: 12px;
+		border: 1px solid var(--sl-color-hairline);
+		background: var(--sl-color-black);
+		box-shadow: var(--sl-shadow-sm);
+	}
+	.sl-markdown-content .expressive-code {
+		border-radius: 12px;
+		border: 1px solid var(--sl-color-hairline);
+		box-shadow: var(--sl-shadow-sm);
+		overflow: hidden;
+	}
+	.sl-markdown-content .expressive-code .frame:not(.has-title) {
+		border-radius: 12px;
+	}
+	.sl-markdown-content .expressive-code .header {
+		background: color-mix(in srgb, var(--sl-color-bg) 85%, transparent);
+		border-bottom: 1px solid var(--sl-color-hairline);
+	}
+	.sl-markdown-content .expressive-code .copy {
+		border-radius: 6px;
+	}
+
+		/* Tables: hairline frame, row-only separators, rounded tinted header.
+	 * Flat selectors + body prefix so they outrank Starlight's content-layer
+	 * rules regardless of bundle/layer behavior. */
+	body .sl-markdown-content table {
+		display: block;
+		overflow-x: auto;
+		width: 100%;
+		border-collapse: separate;
+		border-spacing: 0;
+		margin-block: 1.5rem;
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: 12px;
+		box-shadow: var(--sl-shadow-sm);
+		font-size: 14px;
+		line-height: 1.6;
+	}
+	body .sl-markdown-content th,
+	body .sl-markdown-content td {
+		padding: 10px 14px;
+		border-block-end: 1px solid var(--sl-color-hairline);
+		background: var(--sl-color-bg);
+		text-align: start;
+		vertical-align: top;
+	}
+	body .sl-markdown-content th:first-child,
+	body .sl-markdown-content td:first-child {
+		padding-inline-start: 16px;
+	}
+	body .sl-markdown-content th:last-child,
+	body .sl-markdown-content td:last-child {
+		padding-inline-end: 16px;
+	}
+	body .sl-markdown-content tbody tr:last-child th,
+	body .sl-markdown-content tbody tr:last-child td {
+		border-block-end: 0;
+	}
+	body .sl-markdown-content thead th {
+		font-family: var(--sl-font-mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--sl-color-gray-3);
+		background: var(--sl-color-bg-hover);
+		white-space: nowrap;
+	}
+	body .sl-markdown-content thead th:first-child {
+		border-top-left-radius: 11px;
+	}
+	body .sl-markdown-content thead th:last-child {
+		border-top-right-radius: 11px;
+	}
+	body .sl-markdown-content tbody tr:last-child th:first-child,
+	body .sl-markdown-content tbody tr:last-child td:first-child {
+		border-bottom-left-radius: 11px;
+	}
+	body .sl-markdown-content tbody tr:last-child th:last-child,
+	body .sl-markdown-content tbody tr:last-child td:last-child {
+		border-bottom-right-radius: 11px;
+	}
+	body .sl-markdown-content tbody tr:hover th,
+	body .sl-markdown-content tbody tr:hover td {
+		background: var(--sl-color-accent-tint);
+	}
+	body .sl-markdown-content td code {
+		white-space: normal;
+		overflow-wrap: anywhere;
+	}
+	body .sl-markdown-content tbody td {
+		color: var(--sl-color-gray-2);
+	}
+	body .sl-markdown-content tbody th {
+		color: var(--sl-color-white);
+	}
+
+/* Blockquote */
+	.sl-markdown-content blockquote {
+		border-inline-start: 1px solid var(--sl-color-accent-border);
+		background: var(--sl-color-accent-tint);
+		border-radius: 0 10px 10px 0;
+		padding: 0.75rem 1.125rem;
+		margin-block: 1.5rem;
+		color: var(--sl-color-gray-2);
+	}
+
+	hr {
+		border: 0;
+		border-top: 1px solid var(--sl-color-hairline);
+		margin-block: 2.5rem;
+	}
+
+	/* Callouts: tinted panels, 1px accent edge, brand-warm semantic colors */
+	.starlight-aside {
+		border-inline-start-width: 1px;
+		border-radius: 12px;
+		padding: 1rem 1.125rem;
+		box-shadow: inset 0 1px 0 var(--sl-color-hairline-light);
+	}
+	.starlight-aside--note {
+		--sl-color-asides-text-accent: var(--sl-color-blue-high);
+		--sl-color-asides-border: var(--sl-color-blue);
+		background-color: var(--sl-color-blue-low);
+	}
+	.starlight-aside--tip {
+		--sl-color-asides-text-accent: var(--sl-color-green-high);
+		--sl-color-asides-border: var(--sl-color-green);
+		background-color: var(--sl-color-green-low);
+	}
+	.starlight-aside--caution {
+		--sl-color-asides-text-accent: var(--sl-color-orange-high);
+		--sl-color-asides-border: var(--sl-color-orange);
+		background-color: var(--sl-color-orange-low);
+	}
+	.starlight-aside--danger {
+		--sl-color-asides-text-accent: var(--sl-color-red-high);
+		--sl-color-asides-border: var(--sl-color-red);
+		background-color: var(--sl-color-red-low);
+	}
+	.starlight-aside__heading {
+		gap: 0.5rem;
+		font-family: var(--sl-font-headings);
+		font-size: 0.95rem;
+		font-weight: 650;
+		color: var(--sl-color-asides-text-accent);
+	}
+	.starlight-aside__content {
+		color: var(--sl-color-gray-2);
+		font-size: 0.925rem;
+	}
+
+	/* Badges */
+	.starlight-badge {
+		padding: 3px 9px;
+		border-radius: 999px;
+		border: 1px solid var(--sl-color-accent-border);
+		background: var(--sl-color-accent-tint);
+		font-family: var(--sl-font-mono);
+		font-size: 10.5px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	/* Steps: orange numbered order chips */
+	.starlight-steps .step {
+		gap: 0.875rem;
+	}
+	.starlight-steps .step::before {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 26px;
+		height: 26px;
+		border-radius: 50%;
+		background: var(--sl-color-accent-tint-strong);
+		border: 1px solid var(--sl-color-accent-border);
+		color: var(--sl-color-accent-soft);
+		font-family: var(--sl-font-mono);
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	/* Cards (CardGrid / Card / LinkCard) */
+	.card,
+	.link-card {
+		border-radius: 14px;
+		border: 1px solid var(--sl-color-hairline);
+		background: var(--sl-color-surface);
+		box-shadow: var(--sl-shadow-sm);
+		transition:
+			transform 180ms var(--sl-transition-ease),
+			border-color 180ms var(--sl-transition-ease),
+			box-shadow 180ms var(--sl-transition-ease);
+	}
+	.card:hover,
+	.link-card:hover {
+		transform: translateY(-2px);
+		border-color: var(--sl-color-accent-border);
+		box-shadow: var(--sl-shadow-md);
+	}
+	.card h4,
+	.link-card h4 {
+		font-family: var(--sl-font-headings);
+		font-weight: 620;
+		letter-spacing: -0.015em;
+	}
+	.card p,
+	.link-card p {
+		color: var(--sl-color-gray-3);
+		font-size: 0.925rem;
+	}
+	.card-grid {
+		gap: 1rem;
+	}
+	.link-card::after {
+		background: var(--sl-color-accent);
+	}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 7. ON THIS PAGE — raised panel with quiet links
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+
+	.right-sidebar-panel {
+		padding-block: 2rem;
+	
+	.right-sidebar-panel aside {
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: 14px;
+		background: var(--sl-color-bg-hover);
+		padding: 0.875rem;
+	}
+	.right-sidebar-panel .toc {
+		gap: 0.25rem;
+	}
+	.right-sidebar-panel .toc a {
+		position: relative;
+		display: block;
+		padding: 5px 9px;
+		border-radius: 6px;
+		font-size: 12.5px;
+		line-height: 1.45;
+		color: var(--sl-color-gray-3);
+		text-decoration: none;
+		transition:
+			color 160ms var(--sl-transition-ease),
+			background-color 160ms var(--sl-transition-ease);
+	}
+	.right-sidebar-panel .toc a:hover {
+		color: var(--sl-color-white);
+		background: var(--sl-color-bg-hover);
+	}
+	.right-sidebar-panel .toc a[aria-current='true'] {
+		color: var(--sl-color-accent-soft);
+		background: var(--sl-color-accent-tint);
+		font-weight: 550;
+	}
+	.right-sidebar-panel .toc > ul > li > a {
+		font-family: var(--sl-font-mono);
+		font-size: 10.5px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--sl-color-gray-3);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 8. MOBILE — glass TOC bar, aligned surfaces, overlay menu
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+
+	.mobile-toc {
+		border-block-end: 1px solid var(--sl-color-hairline);
+		background: var(--sl-color-bg-nav);
+		backdrop-filter: blur(16px) saturate(180%);
+		-webkit-backdrop-filter: blur(16px) saturate(180%);
+	
+	.mobile-toc .toggle {
+		color: var(--sl-color-gray-2);
+		transition: color 160ms var(--sl-transition-ease);
+	}
+	.mobile-toc .dropdown {
+		border-block-end: 1px solid var(--sl-color-hairline);
+		background: var(--sl-color-bg);
+		box-shadow: var(--sl-shadow-lg);
+	}
+	.mobile-toc .dropdown a {
+		color: var(--sl-color-gray-2);
+	}
+
+	/* Small-screen nav menu overlay */
+	.sl-overlay-menu,
+	[data-menu] {
+		background: var(--sl-color-bg);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 9. FOOTER + PAGINATION — quiet close
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+
+	.sl-footer {
+		border-block-start: 1px solid var(--sl-color-hairline);
+	
+	.sl-footer .meta,
+	.sl-footer .kudos {
+		color: var(--sl-color-gray-3);
+		font-size: 12.5px;
+	}
+	.sl-footer a {
+		color: var(--sl-color-text-accent);
+		text-underline-offset: 3px;
+	}
+
+	.pagination-links {
+		gap: 0.875rem;
+		margin-block-start: 2.5rem;
+	}
+	.pagination-links a {
+		border-radius: 14px;
+		border: 1px solid var(--sl-color-hairline);
+		background: var(--sl-color-surface);
+		box-shadow: var(--sl-shadow-sm);
+		padding: 0.9rem 1.125rem;
+		transition:
+			transform 180ms var(--sl-transition-ease),
+			border-color 180ms var(--sl-transition-ease),
+			box-shadow 180ms var(--sl-transition-ease);
+	}
+	.pagination-links a:hover {
+		transform: translateY(-2px);
+		border-color: var(--sl-color-accent-border);
+		box-shadow: var(--sl-shadow-md);
+		background: var(--sl-color-surface);
+	}
+	.pagination-links .link-title {
+		font-family: var(--sl-font-headings);
+		font-weight: 600;
+		letter-spacing: -0.015em;
+		color: var(--sl-color-white);
+	}
+	.pagination-links a:hover .link-title {
+		color: var(--sl-color-accent-soft);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 10. LOGO MARK — keep the site title bright, chip accents on hover
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+
+	.site-title:focus-visible {
+		outline-offset: 6px;
+		border-radius: 8px;
+	
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 11. REDUCED MOTION — respect the reader's setting
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+	}
+}

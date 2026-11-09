@@ -1,0 +1,93 @@
+# Kiomon
+# Copyright (c) 2026 Kiomon. All rights reserved.
+#
+# Deploy the docs site to Cloudflare Pages.
+#
+# The site is a **single environment**: there is no dev/prod split. Every run
+# publishes over https://docs.kiomon.com, so `main` is always what the world
+# reads. That is why the trigger is a merge to `main` and nothing else.
+#
+# Target: the Pages project this repository deploys to (production branch
+# `main`). Both the project name and the account it belongs to are repository
+# configuration, not files in this repository — a project rename in the
+# dashboard without the same change here is a deploy that succeeds and serves
+# the old site.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   an API token with Pages:Edit on the account
+#   CLOUDFLARE_ACCOUNT_ID  the account that owns the Pages project
+#
+# Required repository variable:
+#   CLOUDFLARE_PROJECT_NAME  the Pages project this workflow deploys
+#
+# The site reads no environment variables at build time: `astro.config.mjs`'s
+# `site` is the only environment-shaped value, and it is committed on purpose so
+# canonical URLs cannot drift between a local build and CI.
+name: Deploy docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy at a time, and a newer merge supersedes an older one: two
+# overlapping `pages deploy` runs of the same project race each other, and the
+# loser is not necessarily the older commit.
+concurrency:
+  group: deploy-docs
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy (Cloudflare Pages)
+    runs-on: ubuntu-latest
+    environment: production
+
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT_NAME: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Fail in five seconds with the name that is missing, rather than after a
+      # full build with wrangler's "non-interactive environment" error, which
+      # reads like a wrangler problem instead of an unset secret.
+      - name: Check required configuration
+        run: |
+          missing=0
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID PROJECT_NAME; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name is not set — Settings → Secrets and variables → Actions (secrets or variables)"
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # A build that produced no index.html has deployed an empty site before;
+      # fail here instead of shipping it.
+      - name: Verify build output
+        run: test -f dist/index.html
+
+      - name: Ensure the Pages project exists
+        run: npx --yes wrangler pages project create "$PROJECT_NAME" --production-branch main || true
+
+      - name: Deploy
+        run: npx --yes wrangler pages deploy ./dist --project-name "$PROJECT_NAME" --branch main

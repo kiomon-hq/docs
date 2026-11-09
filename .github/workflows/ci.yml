@@ -1,0 +1,59 @@
+# Kiomon
+# Copyright (c) 2026 Kiomon. All rights reserved.
+#
+# Pull-request gate: the site has to build, and the build has to produce a page
+# for every entry the sidebar names.
+#
+# There is no separate deploy gate — `deploy.yml` runs the same build on the
+# merge, so a PR that passes here and merges cleanly is a deploy that builds.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (Astro Starlight)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify build output
+        run: test -f dist/index.html
+
+      # Every starlight sidebar entry names a slug; a typo in one is a sidebar
+      # link to a 404 that the build itself does not reject. Check the rendered
+      # pages exist instead.
+      - name: Every sidebar slug resolves to a built page
+        run: node scripts/check-sidebar.mjs
+
+      - name: Report the surface
+        run: |
+          pages=$(find dist -name 'index.html' | wc -l | tr -d ' ')
+          echo "### Docs build" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- rendered pages: $pages" >> "$GITHUB_STEP_SUMMARY"
+          echo "- sitemap: $(test -f dist/sitemap-index.xml && echo yes || echo no)" >> "$GITHUB_STEP_SUMMARY"

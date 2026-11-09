@@ -1,0 +1,67 @@
+---
+title: Welcome to Kiomon
+description: The first brain for your AI agent — save, forage, and organize everything you read so your agents know what you know.
+---
+
+import { LinkCard, Card, CardGrid, Steps } from '@astrojs/starlight/components';
+
+Kiomon is a **context engine for AI agents**. It lets you save, forage, and organize information from the web — then gives Claude, Cursor, and any MCP-compatible agent persistent access to that knowledge base.
+
+Think of it as **long-term memory for your AI agents**: a brain your assistant can read, search, and write to, that survives across sessions, projects, and tools.
+
+## What you get
+
+<CardGrid>
+	<Card title="Save anything you read">
+		Capture full articles, highlighted text, and URLs with the browser extension — or feed your library from Notion, Confluence, and Google Drive.
+	</Card>
+	<Card title="Find things by keyword and meaning">
+		Kiomon's hybrid search combines exact keyword matching with semantic understanding, so you find things by phrase *and* by concept.
+	</Card>
+	<Card title="A working memory">
+		Agent memories are first-class: reference files, semantic facts, procedural routines, and episodic moments — with pinning, archiving, confidence scoring, and decay.
+	</Card>
+	<Card title="Knowledge graph">
+		A built-in "Librarian" scans your library and suggests wiki-style links between related concepts automatically.
+	</Card>
+	<Card title="Answers with citations">
+		Ask questions in plain language and get grounded answers with numbered citations from your own saved documents.
+	</Card>
+	<Card title="Works with your agents">
+		Connect Cursor, Claude Desktop, Windsurf, Cline, or any OpenAI-compatible client to your brain.
+	</Card>
+</CardGrid>
+
+## How it works
+
+<Steps>
+	1. **Capture** — Save pages, highlights, and notes with the browser extension, or sync a connected source (Notion, Google Drive, Confluence).
+	2. **Organize** — Kiomon auto-tags every document, extracts the ideas it contains, and links related items in your knowledge graph.
+	3. **Retrieve** — Ask your agent anything. It searches your library with hybrid search and answers with citations.
+	4. **Remember** — Your agent reflects at the end of sessions; high-confidence memories auto-activate through the write gate, while lower-confidence drafts wait in your Review Inbox.
+</Steps>
+
+## Where to go next
+
+<CardGrid>
+	<LinkCard
+		title="Quickstart"
+		description="Get up and running in five minutes: extension, workspace, and a connected agent."
+		href="/getting-started/quickstart"
+	/>
+	<LinkCard
+		title="Core Concepts"
+		description="Understand documents, memories, workspaces, and the knowledge graph."
+		href="/getting-started/concepts"
+	/>
+	<LinkCard
+		title="MCP Server"
+		description="Connect Cursor, Claude Desktop, or any MCP client to your Kiomon brain."
+		href="/integrations/mcp-server"
+	/>
+	<LinkCard
+		title="Plans & Quotas"
+		description="See what's free, what's Pro, and what the 14-day trial includes."
+		href="/account/billing"
+	/>
+</CardGrid>
