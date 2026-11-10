@@ -1,6 +1,6 @@
 ---
 title: Memory benchmarks
-description: How Kiomon's retrieval performs on LongMemEval-S and LoCoMo — measured end to end, with no language model in the loop.
+description: How Kiomon's retrieval and its answers perform on LongMemEval-S and LoCoMo — with the sample, the window and the judge stated.
 ---
 
 We publish retrieval numbers for the same reason we publish latency numbers: they are the part of
@@ -8,8 +8,10 @@ memory that can be measured without asking a language model to grade its own hom
 
 Every figure below was produced by running a benchmark's own questions against the same retrieval
 Kiomon serves to you — not against a research prototype — and scoring the result against the
-benchmark's own evidence labels. No answer was generated and no model judged one, so nothing here
-depends on a reader we chose.
+benchmark's own labels. There are two measurements, and they answer different questions: whether
+the evidence came back, and whether the answer did. The retrieval figures involve no model at all.
+The answer figures do, and they name the reader and the judge, because a score that hides either is
+not comparable to anything.
 
 ## LongMemEval-S
 
@@ -38,6 +40,33 @@ already covers 42 % of the candidates by chance. Recall@20 is a weak metric on t
 report it because it is the number systems publish, and we report top-1 because it is the one that
 separates them.
 
+### Answers
+
+Finding the evidence is not the same as using it. For the answer half the benchmark's questions are
+put to a reader model together with the retrieved history, and a second model judges each answer
+against the reference using the benchmark's own question-specific prompts, unchanged.
+
+| Category | n | answered correctly |
+|---|---|---|
+| single-session · assistant | 56 | 100 % |
+| knowledge update | 72 | 94.4 % |
+| single-session · preference | 30 | 93.3 % |
+| single-session · user | 64 | 92.2 % |
+| temporal reasoning | 127 | 86.6 % |
+| multi-session | 121 | 84.3 % |
+| **All answerable** | **470** | **90.0 %** |
+
+The 95 % confidence interval on that headline is [87.0, 92.4]. Scored across all 500 questions —
+including the 30 that have no answer to find — it is 89.2 %.
+
+The reader was GPT-6 Luna and the judge DeepSeek V4.1 Flash, a different model family, so no model
+grades its own answers. Each question was given the ten retrieved sessions, about 32,000 tokens of
+context, and the whole run cost $1.84.
+
+The weakest categories are the two whose evidence is spread across conversations — multi-session at
+84.3 % and temporal reasoning at 86.6 %. Those are the places where finding one session is not
+enough, and they are where the next work is.
+
 ## LoCoMo
 
 Ten long conversations, 1,986 questions, about 600 turns each. Here the benchmark's evidence is a
@@ -65,9 +94,9 @@ not contain. Retrieval does not fix that, and we do not claim it does.
 first result for 87 % of questions; on LoCoMo the exact turn is in the top 20 twenty-two times more
 often than chance.
 
-**They do not say** the answer is correct. Retrieval is the half that can be measured without a
-judge; the half that produces an answer is measured separately, and those results are not published
-yet.
+**They do not say** the answer is correct — that is a separate measurement, reported above with its
+reader and its judge named. A judged score quotes its judge: ours is one model, and a second judge on
+the same run is still outstanding.
 
 **They are not a head-to-head.** Another system's recall figure is only comparable to ours when it
 was measured at the same window, on the same sample, with the same rule for what counts as a hit.
@@ -76,13 +105,16 @@ rather say so than put them side by side.
 
 ## Abstention
 
-We do not claim that Kiomon knows when it does not know. Measured on the benchmark's 30 unanswerable
-questions against 60 answerable ones, no score the retrieval layer returns separates the two groups
-well enough to be a threshold: cosine similarity on the top result is 0.641 against 0.683, and
-lexical coverage 0.339 against 0.529. Saying "I found nothing" needs a model that reads the context,
-and today that judgement belongs to the one answering.
+The retrieval layer does not know when there is nothing to find, and we do not claim it does.
+Measured on the benchmark's 30 unanswerable questions against 60 answerable ones, no score it returns
+separates the two groups well enough to be a threshold: cosine similarity on the top result is 0.641
+against 0.683, and lexical coverage 0.339 against 0.529.
 
-## How to read a recall number
+The answering model does better: it identified 76.7 % of those 30 questions as unanswerable. That is a
+property of the reader rather than of search — it moves when the reader changes, and it is the one
+number on this page that depends on a model recognising its own ignorance.
+
+## How to read these numbers
 
 Three things make a recall figure meaningful, and a figure missing any of them is not comparable:
 
@@ -92,3 +124,6 @@ Three things make a recall figure meaningful, and a figure missing any of them i
   3.2 points at rank 1 when we finished the set;
 - **the floor** — a window of 20 over 48 candidates scores 42 % by chance, so 96 % and 99 % are
   closer than they look.
+
+An answer figure needs one more: **the reader and the judge**. An accuracy number without both is
+unfalsifiable, which is why every one here carries them.
