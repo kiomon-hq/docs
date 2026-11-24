@@ -64,11 +64,76 @@ Starlight overrides live in `src/components/`: `SiteTitle.astro` (mark + wordmar
 on Starlight's contract — `localStorage 'starlight-theme'`, `documentElement.dataset.theme`,
 `StarlightThemeProvider.updatePickers` — not on private internals.
 
+## Branches, review and merge
+
+Two long-lived branches, and one rule about each:
+
+| Branch | What it is | How a change reaches it |
+|---|---|---|
+| `develop` | The integration branch. Everything lands here first. | A pull request from a feature branch. |
+| `main` | Production. A push to it publishes. | `develop` merged into it by a person, after review. |
+
+**Never push a content change straight to `main`.** Merge to `main` deploys a public site with
+no staging environment behind it, so the last thing between a typo and `docs.kiomon.com` is the
+review on the pull request that put it on `develop`.
+
+### The loop
+
+```sh
+cd docs
+git fetch origin
+git worktree add ../wt-<task> -b <branch> origin/develop
+cd ../wt-<task>
+# edit, then:
+npm run build && npm run check:sidebar
+git add <paths>
+git commit
+gh pr create --base develop --fill
+```
+
+After the merge:
+
+```sh
+git worktree remove ../wt-<task>
+```
+
+Then, when `develop` is ready to publish, a person opens a pull request from `develop` into
+`main`, reads the diff as a reader rather than as an author, and merges it. That merge is the
+deploy. It is not a routine step: it is the only moment anyone looks at what is about to be
+live, all at once.
+
+### One checkout per agent
+
+A checkout has one HEAD and one index, shared by every process using it. Two agents in one
+checkout commit onto each other's branches, and one agent's `git switch` moves the other's work
+out from under it. If a checkout holds a branch that is not yours — or files you do not own —
+make a worktree instead of switching.
+
+Before committing, check three things: you are on your branch (`git branch --show-current`), the
+tree holds only your files (`git status --short`), and you are not behind (`git fetch origin`,
+then compare with `origin/develop`). Stage explicitly (`git add <path>`), never `git add -A`,
+unless the worktree is yours alone.
+
+### What a pull request has to say
+
+CI checks that the site builds and that every sidebar slug resolves. It cannot check whether a
+sentence is true, whether a number matches the rest of the site, or whether a page describes
+how Kiomon is built instead of what a user gets. That is what the description is for:
+
+- which pages changed, and the one sentence worth reading in each;
+- any number (price, cap, limit) touched, and the page it now has to agree with;
+- whether a slug moved. A changed slug is a broken external link unless the old path is
+  redirected, so say so explicitly.
+
 ## Deployment
 
-Merge to `main` deploys. There is no dev/staging environment and no manual step: the workflow
-builds, verifies `dist/index.html`, and uploads the directory to the Pages project. Credentials
-are repository Actions secrets, never files in this repository.
+`main` publishes. Merging `develop` into `main` is the release: there is no staging site and no
+manual step after it. The deploy workflow builds the site and uploads `dist/` to the Pages
+project configured for this repository, which serves `docs.kiomon.com`.
+
+Project name and credentials live in the repository's Actions variables and secrets, never in
+the repository. A pull request runs the same build plus `scripts/check-sidebar.mjs`, so a typo
+in a sidebar slug is a red build rather than a 404 in production.
 
 Two consequences:
 

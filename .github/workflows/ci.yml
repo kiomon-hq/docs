@@ -10,7 +10,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    # Both branches, because both are review gates now: `develop` is where work lands
+    # first, `main` is where `develop` lands before it publishes.
+    branches: [main, develop]
   workflow_dispatch:
 
 permissions:

@@ -79,9 +79,14 @@ The design system (tokens, type, chrome, behaviour) is written down in [`DESIGN.
 
 ## Deploying
 
-Merge to `main` publishes to production. There is no staging site and no manual step: the
-deploy workflow builds the site and uploads `dist/` to the Pages project configured for this
+Two branches: `develop` is where changes land first, `main` publishes. Merging `develop` into
+`main` is the release — there is no staging site and no manual step after it. The deploy
+workflow builds the site and uploads `dist/` to the Pages project configured for this
 repository, which serves `docs.kiomon.com`.
+
+Nothing is pushed to `main` directly. A feature branch opens a pull request against `develop`,
+and `develop` is merged into `main` by a person once it is ready to go live. See
+[`AGENTS.md`](AGENTS.md#branches-review-and-merge) for the loop.
 
 Project name and credentials live in the repository's Actions variables and secrets, never in
 the repository. A pull request runs the same build plus `scripts/check-sidebar.mjs`, so a typo
