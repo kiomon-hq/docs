@@ -86,6 +86,13 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Devices & Robots',
+					items: [
+						{ label: 'Memory for devices', slug: 'devices' },
+						{ label: 'Device examples', slug: 'devices/examples' },
+					],
+				},
+				{
 					label: 'SDK',
 					items: [
 						{ label: 'Overview', slug: 'sdk' },
