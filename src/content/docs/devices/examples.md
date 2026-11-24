@@ -219,6 +219,9 @@ keeps the retrieval, the trust model and the durability.
   unfindable. Write what a person would say.
 - **Send `external_id` on every write.** Free idempotency, and the only thing that makes a
   flaky uplink safe.
-- **`anchors` is not accepted yet.** If you need `[0:08]` offsets into a recording, the write
-  returns `400` today rather than dropping the field silently. Evidence files work now;
-  offsets inside them are next.
+- **Anchors are offsets, not times.** `anchors: [{start_s: 0, end_s: 8}]` says where in the
+  recording to look; `occurred_at` says when the thing happened. A 30-second clip from 2019
+  has an anchor at 8 s, and confusing the two dates the Memory to 1970.
+- **One device cannot spend another's budget.** Writes are capped at 60 per minute per
+  `device_id`, separately from the account's daily limit, so a single unit stuck in a retry
+  loop will not silence the rest of the fleet.

@@ -103,9 +103,10 @@ lives, and it is the piece to get right before writing any integration code.
 | `GET /v1/recall` with qualifier, entity and time filters | available |
 | `GET /v1/memories/:id` | available |
 | Evidence presign + retrieval | available |
-| Anchors (offsets into a recording, `[0:08]`) | not yet — the write is refused with `400` rather than silently dropped |
+| Anchors (offsets into a recording, `[0:08]`) | available — offsets, not clock times |
+| Device trust ramp (3 approvals, then testimony auto-admits) | available |
 | Vendor SDK (Rust core, Kotlin/Swift/C++) | not yet — plain HTTPS works today |
-| Per-device rate limiting | route-level limits today; a per-`device_id` budget is planned |
+| Per-device rate limiting | available — 60 writes/minute per `device_id`, separate from the account budget |
 
 Nothing above requires a robotics background to use. If you can make an HTTPS request and
 read a JSON response, you can give your device a memory.
