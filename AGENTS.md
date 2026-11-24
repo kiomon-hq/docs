@@ -114,6 +114,34 @@ tree holds only your files (`git status --short`), and you are not behind (`git 
 then compare with `origin/develop`). Stage explicitly (`git add <path>`), never `git add -A`,
 unless the worktree is yours alone.
 
+### How the rule is enforced
+
+Convention is not a gate. Both branches carry branch protection, and it applies to admins too —
+so there is no account in this repository that can push a page straight to `main`, the owner's
+included. The rules, as configured today:
+
+| | `develop` | `main` |
+|---|---|---|
+| Direct pushes | refused; a pull request is the only way in | refused; a pull request is the only way in |
+| Required check | `Build (Astro Starlight)` | `Build (Astro Starlight)` |
+| Required approvals | 0 | 0 |
+| Force push / branch delete | refused | refused |
+| Applies to admins | yes | yes |
+
+**Approvals are 0 because the organization has one member.** A required approval with no second
+account to give it would not enforce review — it would make releases impossible. The pull request
+is the review artifact: it shows the build, the diff and the description, and the merge into
+`main` is the moment someone reads what is about to be live.
+
+When a second person can review, raise `main` to one required approval. The setting is the point
+at which "merged by a peer" becomes true rather than intended:
+
+```sh
+gh api -X PUT repos/kiomon-hq/docs/branches/main/protection --input - <<'JSON'
+{ "required_pull_request_reviews": { "required_approving_review_count": 1 } }
+JSON
+```
+
 ### What a pull request has to say
 
 CI checks that the site builds and that every sidebar slug resolves. It cannot check whether a
